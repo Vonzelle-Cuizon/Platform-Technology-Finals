@@ -9,7 +9,6 @@
 </head>
 <body>
 
-
   <div class="add-task-container">
     <h3>Add New Task</h3>
     <input type="text" id="task-input" placeholder="Enter task description">
@@ -26,7 +25,6 @@
   </div>
 </div>
 
-
   <div class="checklist-container">
     <h1 class="title">Weekly</h1>
     <h2 class="subtitle">Class Checklist</h2>
@@ -35,7 +33,6 @@
         <div class="day" id="monday">
           <h3>Monday</h3>
           <ul id="monday-tasks">
-            <!-- Tasks will be loaded here dynamically -->
           </ul>
         </div>
         <div class="day" id="tuesday">
@@ -65,11 +62,7 @@
       </div>
     </div>
 
-    <!-- Add Task Section -->
-    
-
   <script>
-    // Initialize Supabase
     const { createClient } = supabase;
     const supabaseUrl = 'https://uozlvwrrlawkknjgofck.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVvemx2d3JybGF3a2tuamdvZmNrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM3NTIxOTYsImV4cCI6MjA0OTMyODE5Nn0.HJPuK5RbXfAmDchZWT4s0d5hYG8f2dVmHgV66yM8oIc'; // Use your Supabase key
@@ -79,26 +72,24 @@
   const { data, error } = await connection
     .from('days')
     .select('*')
-    .eq('day', day); // Filter tasks by day (0-6)
+    .eq('day', day); 
 
   if (error) {
     console.error('Error fetching data:', error);
     return;
   }
 
-  // Clear the tasks for the day before adding new ones
   const dayNames = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
   const dayName = dayNames[day];
   const taskList = document.getElementById(`${dayName}-tasks`);
-  taskList.innerHTML = ''; // Clear previous tasks
+  taskList.innerHTML = ''; 
 
-  // Populate tasks for the specific day
   data.forEach(item => {
     const listItem = document.createElement('li');
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
-    checkbox.id = `checkbox-${item.id}`; // Add an id for the checkbox to identify it
-    checkbox.addEventListener('change', () => handleCheckboxChange(item.id, checkbox.checked)); // Add event listener
+    checkbox.id = `checkbox-${item.id}`; 
+    checkbox.addEventListener('change', () => handleCheckboxChange(item.id, checkbox.checked)); 
 
     const taskInput = document.createElement('input');
     taskInput.type = 'text';
@@ -113,7 +104,6 @@
   console.log('Fetched Data:', data);
 }
 
-// Handle checkbox change (delete task if checked)
 async function handleCheckboxChange(taskId, isChecked) {
   if (isChecked) {
     const { data, error } = await connection
@@ -125,19 +115,16 @@ async function handleCheckboxChange(taskId, isChecked) {
       console.error('Error deleting task:', error);
     } else {
       console.log('Task deleted successfully');
-      // Remove the task from the DOM
       const taskElement = document.getElementById(`checkbox-${taskId}`).parentElement;
       taskElement.remove();
     }
   }
 }
 
-// Add task to Supabase
 async function addTask() {
   const taskInput = document.getElementById('task-input').value;
   const daySelect = document.getElementById('day-select').value;
 
-  // Check if the input is valid
   if (!taskInput) {
     alert("Please enter a task description.");
     return;
@@ -151,11 +138,9 @@ async function addTask() {
     console.error('Error adding task:', error);
   } else {
     console.log('Task added successfully');
-    // Fetch updated tasks for the specific day
-    fetchData(parseInt(daySelect)); // Fetch tasks for the selected day
+    fetchData(parseInt(daySelect)); 
   }
 
-  // Clear input field after adding the task
   document.getElementById('task-input').value = '';
 }
 
