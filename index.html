@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weekly Class Checklist</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+
+  <div class="add-task-container">
+    <h3>Add New Task</h3>
+    <input type="text" id="task-input" placeholder="Enter task description">
+    <select id="day-select">
+      <option value="0">Monday</option>
+      <option value="1">Tuesday</option>
+      <option value="2">Wednesday</option>
+      <option value="3">Thursday</option>
+      <option value="4">Friday</option>
+      <option value="5">Saturday</option>
+      <option value="6">Sunday</option>
+    </select>
+    <button id="add-task-btn">Add Task</button>
+  </div>
+</div>
+
+
+  <div class="checklist-container">
+    <h1 class="title">Weekly</h1>
+    <h2 class="subtitle">Class Checklist</h2>
+    <div class="days-container">
+      <div class="days">
+        <div class="day" id="monday">
+          <h3>Monday</h3>
+          <ul id="monday-tasks">
+            <!-- Tasks will be loaded here dynamically -->
+          </ul>
+        </div>
+        <div class="day" id="tuesday">
+          <h3>Tuesday</h3>
+          <ul id="tuesday-tasks"></ul>
+        </div>
+        <div class="day" id="wednesday">
+          <h3>Wednesday</h3>
+          <ul id="wednesday-tasks"></ul>
+        </div>
+        <div class="day" id="thursday">
+          <h3>Thursday</h3>
+          <ul id="thursday-tasks"></ul>
+        </div>
+        <div class="day" id="friday">
+          <h3>Friday</h3>
+          <ul id="friday-tasks"></ul>
+        </div>
+        <div class="day" id="saturday">
+          <h3>Saturday</h3>
+          <ul id="saturday-tasks"></ul>
+        </div>
+        <div class="day" id="sunday">
+          <h3>Sunday</h3>
+          <ul id="sunday-tasks"></ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Task Section -->
+    
+
+  <script>
+    // Initialize Supabase
+    const { createClient } = supabase;
+    const supabaseUrl = 'https://uozlvwrrlawkknjgofck.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVvemx2d3JybGF3a2tuamdvZmNrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM3NTIxOTYsImV4cCI6MjA0OTMyODE5Nn0.HJPuK5RbXfAmDchZWT4s0d5hYG8f2dVmHgV66yM8oIc'; // Use your Supabase key
+    const connection = createClient(supabaseUrl, supabaseKey);
+
+    async function fetchData(day) {
+  const { data, error } = await connection
+    .from('days')
+    .select('*')
+    .eq('day', day); // Filter tasks by day (0-6)
+
+  if (error) {
+    console.error('Error fetching data:', error);
+    return;
+  }
+
+  // Clear the tasks for the day before adding new ones
+  const dayNames = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
+  const dayName = dayNames[day];
+  const taskList = document.getElementById(`${dayName}-tasks`);
+  taskList.innerHTML = ''; // Clear previous tasks
+
+  // Populate tasks for the specific day
+  data.forEach(item => {
+    const listItem = document.createElement('li');
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.id = `checkbox-${item.id}`; // Add an id for the checkbox to identify it
+    checkbox.addEventListener('change', () => handleCheckboxChange(item.id, checkbox.checked)); // Add event listener
+
+    const taskInput = document.createElement('input');
+    taskInput.type = 'text';
+    taskInput.value = item.task;
+    taskInput.placeholder = 'Enter task here';
+
+    listItem.appendChild(checkbox);
+    listItem.appendChild(taskInput);
+    taskList.appendChild(listItem);
+  });
+
+  console.log('Fetched Data:', data);
+}
+
+// Handle checkbox change (delete task if checked)
+async function handleCheckboxChange(taskId, isChecked) {
+  if (isChecked) {
+    const { data, error } = await connection
+      .from('days')
+      .delete()
+      .eq('id', taskId);
+
+    if (error) {
+      console.error('Error deleting task:', error);
+    } else {
+      console.log('Task deleted successfully');
+      // Remove the task from the DOM
+      const taskElement = document.getElementById(`checkbox-${taskId}`).parentElement;
+      taskElement.remove();
+    }
+  }
+}
+
+// Add task to Supabase
+async function addTask() {
+  const taskInput = document.getElementById('task-input').value;
+  const daySelect = document.getElementById('day-select').value;
+
+  // Check if the input is valid
+  if (!taskInput) {
+    alert("Please enter a task description.");
+    return;
+  }
+
+  const { data, error } = await connection
+    .from('days')
+    .insert([{ task: taskInput, day: parseInt(daySelect) }]);
+
+  if (error) {
+    console.error('Error adding task:', error);
+  } else {
+    console.log('Task added successfully');
+    // Fetch updated tasks for the specific day
+    fetchData(parseInt(daySelect)); // Fetch tasks for the selected day
+  }
+
+  // Clear input field after adding the task
+  document.getElementById('task-input').value = '';
+}
+
+document.getElementById('add-task-btn').addEventListener('click', addTask);
+
+fetchData(0); 
+fetchData(1); 
+fetchData(2); 
+fetchData(3); 
+fetchData(4); 
+fetchData(5); 
+fetchData(6); 
+  </script>
+</body>
+</html>
