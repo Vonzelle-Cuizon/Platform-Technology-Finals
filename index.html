@@ -68,9 +68,16 @@
 
   <script>
     const { createClient } = supabase;
-    const supabaseUrl = 'https://uozlvwrrlawkknjgofck.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVvemx2d3JybGF3a2tuamdvZmNrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM3NTIxOTYsImV4cCI6MjA0OTMyODE5Nn0.HJPuK5RbXfAmDchZWT4s0d5hYG8f2dVmHgV66yM8oIc';
-    const connection = createClient(supabaseUrl, supabaseKey);
+    // const supabaseUrl = 'https://uozlvwrrlawkknjgofck.supabase.co';
+    // const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVvemx2d3JybGF3a2tuamdvZmNrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM3NTIxOTYsImV4cCI6MjA0OTMyODE5Nn0.HJPuK5RbXfAmDchZWT4s0d5hYG8f2dVmHgV66yM8oIc';
+   
+   // const supabaseUrl = 'https://uozlvwrrlawkknjgofck.supabase.co' 
+   // const connection = createClient(supabaseUrl, supabaseKey);
+
+
+const supabaseUrl = 'https://uozlvwrrlawkknjgofck.supabase.co'
+const supabaseKey = process.env.SUPABASE_KEY
+const connection = createClient(supabaseUrl, supabaseKey)
 
     async function fetchData(day) {
   const { data, error } = await connection
